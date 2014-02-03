@@ -5,21 +5,21 @@ DBPASSWORD="abc123"
 MAILNAME="server.com"
 MAINMAILTYPE="Internet Site"
 
-# install postfix and dovecot
+# install postfix and dovecot without questions
 sudo debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
 sudo debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
-sudo apt-get -y install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp
+sudo apt-get -y -q install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp
 
-# install mysql
+# install mysql without questions
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $DBPASSWORD"
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $DBPASSWORD"
-sudo apt-get -y install dovecot-mysql mysql-server postfix-mysql
+sudo apt-get -y -q install dovecot-mysql mysql-server postfix-mysql
 
 # install database
 mysqladmin -p create mailserver
 mysql -u root -p$DBPASSWORD < database.sql
 
-# postfix setup
+# backup postfix setupfile
 sudo cp /etc/postfix/main.cf /etc/postfix/main.cf.orig
 
 # do some fancy search replacing

@@ -1,3 +1,7 @@
+GRANT SELECT ON mailserver.* TO 'mailuser'@'127.0.0.1' IDENTIFIED BY 'mailuserpass';
+
+FLUSH PRIVILEGES;
+
 CREATE TABLE `virtual_domains` (
   `id` int(11) NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,

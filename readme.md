@@ -13,6 +13,11 @@ About
 
 This is a simple try to automate my mail server install process. The goal of this project is get a full blooded mail server using postfix, dovecot, postgray, spamassassin + various admin tools up and running in minimum amount of time.
 
+OS
+==
+
+This script will mainly be written for Ubuntu 12.04 because of the wide support for this OS on different VPS providers. In the future a Arch Linux version might not be unheard of.
+
 Inspiration 
 ===========
 

@@ -1,4 +1,4 @@
-GRANT SELECT ON mailserver.* TO 'mailuser'@'127.0.0.1' IDENTIFIED BY 'mailuserpass';
+GRANT SELECT ON mailserver.* TO 'mailuser'@'127.0.0.1' IDENTIFIED BY 'passwordreplace';
 
 FLUSH PRIVILEGES;
 

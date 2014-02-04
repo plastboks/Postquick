@@ -34,14 +34,6 @@ sudo debconf-set-selections <<< "mysql-server mysql-server/root_password passwor
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $ROOTDBPASS"
 sudo apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql
 
-#-- install database
-echo "#################################"
-echo "Creating the mailserver database."
-echo "#################################"
-mysqladmin -u root -p$ROOTDBPASS create mailserver
-sed -i "s/passwordreplace/$MAILDBPASS/g" sql/mailserver.sql
-mysql -u root -p$ROOTDBPASS mailserver < sql/mailserver.sql
-
 #-- do some fancy search replacing
 echo "#################################"
 echo "Search replacing the configfiles."
@@ -50,7 +42,15 @@ sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtua
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-mailbox-maps.cf
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-alias-maps.cf
 sed -i "s/passwordreplace/$MAILDBPASS/g" configs/dovecot-dovecot-sql.conf.ext
+sed -i "s/passwordreplace/$MAILDBPASS/g" sql/mailserver.sql
 sed -i "s/hostnamereplace/myhostname = host.$MAILNAME/g" configs/postfix-main.cf
+
+#-- install database
+echo "#################################"
+echo "Creating the mailserver database."
+echo "#################################"
+mysqladmin -u root -p$ROOTDBPASS create mailserver
+mysql -u root -p$ROOTDBPASS mailserver < sql/mailserver.sql
 
 #-- copy postfix config files to destinations
 echo "#########################################"

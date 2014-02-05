@@ -25,6 +25,11 @@ echo "###############################"
 sudo debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
 sudo debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
 sudo apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp
+# -- Ze filters.
+sudo apt-get -y -qq install amavis clamav clamav-daemon spamassassin postgrey
+# -- Virus detection extentions
+sudo apt-get -y -qq install libnet-dns-perl pyzor razor
+sudo apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip
 
 #-- install mysql without questions
 echo "############################"
@@ -57,6 +62,7 @@ echo "#########################################"
 echo "Copy postfix configfiles to /etc/postfix."
 echo "#########################################"
 sudo cp configs/postfix-main.cf /etc/postfix/main.cf
+sudo cp configs/postfix-master.cf /etc/postfix/master.cf
 sudo cp configs/postfix-mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf
 sudo cp configs/postfix-mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf
 sudo cp configs/postfix-mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf

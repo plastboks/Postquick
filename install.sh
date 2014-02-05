@@ -45,12 +45,17 @@ sudo apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql
 echo "#################################"
 echo "Search replacing the configfiles."
 echo "#################################"
+#-- postfix
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-mailbox-domains.cf
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-mailbox-maps.cf
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-alias-maps.cf
-sed -i "s/passwordreplace/$MAILDBPASS/g" configs/dovecot-dovecot-sql.conf.ext
-sed -i "s/passwordreplace/$MAILDBPASS/g" sql/mailserver.sql
 sed -i "s/hostnamereplace/myhostname = host.$MAILNAME/g" configs/postfix-main.cf
+#-- dovecot
+sed -i "s/passwordreplace/$MAILDBPASS/g" configs/dovecot-dovecot-sql.conf.ext
+#-- sql
+sed -i "s/passwordreplace/$MAILDBPASS/g" sql/mailserver.sql
+#-- amavis
+sed -i "s/passwordreplace/$MAILDBPASS/g" configs/amavis-50-user
 
 #-- install database
 echo "#################################"
@@ -59,6 +64,9 @@ echo "#################################"
 mysqladmin -u root -p$ROOTDBPASS create mailserver
 mysql -u root -p$ROOTDBPASS mailserver < sql/mailserver.sql
 
+echo "############################"
+echo "Backing up old config files."
+echo "############################"
 #-- backup all old postfix config files, might fail if file does not exists.
 sudo cp /etc/postfix/main.cf p/etc/postfix/main.cf.$UNIXTIME
 sudo cp /etc/postfix/master.cf /etc/postfix/master.cf.$UNIXTIME
@@ -66,7 +74,6 @@ sudo cp /etc/postfix/mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual
 sudo cp /etc/postfix/mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf.$UNIXTIME
 sudo cp /etc/postfix/mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf.$UNIXTIME
 sudo cp /etc/postfix/postfix-header_checks /etc/postfix/postfix-header_checks.$UNIXTIME
-
 #-- backup all old dovecot config files, might fail if file does not exists.
 sudo cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.$UNIXTIME
 sudo cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
@@ -75,22 +82,21 @@ sudo cp /etc/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/10-mail.conf.$UNIXT
 sudo cp /etc/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/10-auth.conf.$UNIXTIME
 sudo cp /etc/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/10-master.conf.$UNIXTIME
 sudo cp /etc/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf.$UNIXTIME
+#-- amavis
+sudo cp /etc/amavis/conf.d/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode.$UNIXTIME
+sudo cp /etc/amavis/conf.d/50-user /etc/amavis/conf.d/50-user.$UNIXTIME
 
-#-- copy postfix config files to destinations
-echo "#########################################"
-echo "Copy postfix configfiles to /etc/postfix."
-echo "#########################################"
+echo "#########################"
+echo "Copying over configfiles."
+echo "#########################"
+#-- postfix
 sudo cp configs/postfix-main.cf /etc/postfix/main.cf
 sudo cp configs/postfix-master.cf /etc/postfix/master.cf
 sudo cp config/postfix-header_checks /etc/postfix/header_checks
 sudo cp configs/postfix-mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf
 sudo cp configs/postfix-mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf
 sudo cp configs/postfix-mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf
-
-#-- copy dovecot config files to destinations
-echo "#########################################"
-echo "Copy dovecot configfiles to /etc/dovecot."
-echo "#########################################"
+#-- dovecot 
 sudo cp configs/dovecot-dovecot.conf /etc/dovecot/dovecot.conf
 sudo cp configs/dovecot-dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext
 sudo cp configs/dovecot-auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext
@@ -100,15 +106,21 @@ sudo cp configs/dovecot-10-master.conf /etc/dovecot/conf.d/10-master.conf
 sudo cp configs/dovecot-10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf
 sudo chown -R vmail:dovecot /etc/dovecot
 sudo chmod -R o-rwx /etc/dovecot
+#-- amavis
+sudo cp config/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
+sudo cp config/amavis-50-user /etc/amavis/conf.d/50-user
 
-#-- create and setup dovecot accounts.
-echo "##################################"
-echo "Create and setup dovecot accounts."
-echo "##################################"
+echo "###############################"
+echo "Create and setup user accounts."
+echo "###############################"
+#-- dovecot accounts.
 sudo mkdir -p /var/mail/vhosts/$MAILNAME
 sudo groupadd -g 5000 vmail
 sudo useradd -g vmail -u 5000 vmail -d /var/mail
 sudo chown -R vmail:vmail /var/mail
+#-- clamavis
+sudo adduser clamav amavis
+sudo adduser amavis clamav
 
 #-- restart services
 echo "####################"

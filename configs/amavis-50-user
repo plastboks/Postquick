@@ -23,7 +23,8 @@ $sa_tag_level_deflt  = -9999;
     ['DBI:mysql:database=mailserver;host=127.0.0.1;port=3306',
      'mailuser',
      'passwordreplace']);
-$sql_select_policy = 'SELECT domain from domain WHERE CONCAT("@",domain) IN (%k)';
+$sql_select_policy = 'SELECT name from virtual_domains WHERE CONCAT("@",name) in (%k)';
+
 
 # Uncomment to bump up the log level when testing.
 # $log_level = 2;

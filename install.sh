@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 # PostQuick install script for installing postfix, dovecot (++) on
-# a Ubuntu (12.04) server.
+# a CLEAN! Ubuntu (12.04) server.
 #
 # @category     install script.
-# @version      0.0.1
+# @version      0.0.2
 # @author       Alexander Skjolden
 # @license      http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License
 #
@@ -18,6 +18,10 @@ UNIXTIME=`date +%s`
 #-- these variables should be prompted for..., eventually.
 # An if statement should be added here for compatibility towards
 # servers with mysql already installed.
+# IF dpkg --get-selections | grep mysql-server
+#    enter mysql root password
+# ELSE
+#    enter new mysql root password
 read -s -p "Enter a new mysql root password: " ROOTDBPASS
 echo #newline 
 read -p "Domainname for mailserver: " MAILNAME

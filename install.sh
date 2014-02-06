@@ -84,11 +84,11 @@ sudo cp /etc/postfix/master.cf /etc/postfix/master.cf.$UNIXTIME
 sudo cp /etc/postfix/mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf.$UNIXTIME
 sudo cp /etc/postfix/mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf.$UNIXTIME
 sudo cp /etc/postfix/mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf.$UNIXTIME
-sudo cp /etc/postfix/postfix-header_checks /etc/postfix/postfix-header_checks.$UNIXTIME
+sudo cp /etc/postfix/postfix-header_checks /etc/postfix/header_checks.$UNIXTIME
 #-- backup all old dovecot config files, might fail if file does not exists.
 sudo cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.$UNIXTIME
 sudo cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
-sudo cp /etc/dovecot/dovecot-auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext.$UNIXTIME
+sudo cp /etc/dovecot/conf.d/auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext.$UNIXTIME
 sudo cp /etc/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/10-mail.conf.$UNIXTIME
 sudo cp /etc/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/10-auth.conf.$UNIXTIME
 sudo cp /etc/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/10-master.conf.$UNIXTIME

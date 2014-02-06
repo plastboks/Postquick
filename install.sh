@@ -26,6 +26,10 @@ randomstring 10;
 MAILDBPASS=$myRandomResult;
 MAINMAILTYPE="Internet Site"
 
+#-- install hostname
+sudo bash -c "echo $MAILNAME > /etc/hostname"
+sudo bash -c "echo "127.0.0.1 $MAILNAME localhost" >> /etc/hosts" # kind of dirty. Should be put in right place.
+
 #-- install postfix and dovecot without questions
 echo "###############################"
 echo "Installing postfix and dovecot."

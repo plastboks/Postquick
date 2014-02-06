@@ -48,6 +48,10 @@ sudo debconf-set-selections <<< "mysql-server mysql-server/root_password passwor
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $ROOTDBPASS"
 sudo apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql > /dev/null 2>&1
 
+#-- install and setup snailoil certs
+sudo apt-get -y -qq install ssl-cert > /dev/null 2>&1
+sudo make-ssl-cert generate-default-snakeoil --force-overwrite
+
 #-- do some fancy search replacing
 echo "# -- Search replacing the configfiles."
 #-- postfix
@@ -103,8 +107,6 @@ sudo cp configs/dovecot-10-mail.conf /etc/dovecot/conf.d/10-mail.conf
 sudo cp configs/dovecot-10-auth.conf /etc/dovecot/conf.d/10-auth.conf
 sudo cp configs/dovecot-10-master.conf /etc/dovecot/conf.d/10-master.conf
 sudo cp configs/dovecot-10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf
-sudo chown -R vmail:dovecot /etc/dovecot
-sudo chmod -R o-rwx /etc/dovecot
 #-- amavis
 sudo cp configs/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
 sudo cp configs/amavis-50-user /etc/amavis/conf.d/50-user
@@ -121,6 +123,10 @@ sudo chown -R vmail:vmail /var/mail
 #-- clamavis
 sudo adduser clamav amavis
 sudo adduser amavis clamav
+
+#-- set permissions
+sudo chown -R vmail:dovecot /etc/dovecot
+sudo chmod -R o-rwx /etc/dovecot
 
 #-- restart services
 echo "# -- Restarting services."

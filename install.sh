@@ -21,7 +21,8 @@ read -s -p "Enter a mysql root password: " ROOTDBPASS
 echo #newline 
 read -p "Domainname for mailserver: " MAILNAME
 
-MAILDBPASS="123abc"
+randomstring 10;
+MAILDBPASS=$myRandomResult;
 MAINMAILTYPE="Internet Site"
 
 exit

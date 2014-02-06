@@ -28,7 +28,8 @@ MAINMAILTYPE="Internet Site"
 
 #-- install hostname
 sudo bash -c "echo $MAILNAME > /etc/hostname"
-sudo bash -c "echo "127.0.0.1 $MAILNAME localhost" >> /etc/hosts" # kind of dirty. Should be put in right place.
+sudo bash -c "echo 127.0.0.1 $MAILNAME localhost >> /etc/hosts" # kind of dirty. Should be put in right place.
+sudo hostname $MAILNAME
 
 #-- install postfix and dovecot without questions
 echo "###############################"
@@ -78,7 +79,7 @@ echo "############################"
 echo "Backing up old config files."
 echo "############################"
 #-- backup all old postfix config files, might fail if file does not exists.
-sudo cp /etc/postfix/main.cf p/etc/postfix/main.cf.$UNIXTIME
+sudo cp /etc/postfix/main.cf /etc/postfix/main.cf.$UNIXTIME
 sudo cp /etc/postfix/master.cf /etc/postfix/master.cf.$UNIXTIME
 sudo cp /etc/postfix/mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf.$UNIXTIME
 sudo cp /etc/postfix/mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf.$UNIXTIME
@@ -102,7 +103,7 @@ echo "#########################"
 #-- postfix
 sudo cp configs/postfix-main.cf /etc/postfix/main.cf
 sudo cp configs/postfix-master.cf /etc/postfix/master.cf
-sudo cp config/postfix-header_checks /etc/postfix/header_checks
+sudo cp configs/postfix-header_checks /etc/postfix/header_checks
 sudo cp configs/postfix-mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf
 sudo cp configs/postfix-mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf
 sudo cp configs/postfix-mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf
@@ -117,8 +118,12 @@ sudo cp configs/dovecot-10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf
 sudo chown -R vmail:dovecot /etc/dovecot
 sudo chmod -R o-rwx /etc/dovecot
 #-- amavis
-sudo cp config/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
-sudo cp config/amavis-50-user /etc/amavis/conf.d/50-user
+sudo cp configs/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
+sudo cp configs/amavis-50-user /etc/amavis/conf.d/50-user
+
+#-- sed some in /etc/default/spamassassin
+sudo sed -i "s/ENABLED=0/ENABLED=1/g" /etc/default/spamassassin
+sudo sed -i "s/CRON=0/CRON=1/g" /etc/default/spamassassin
 
 echo "###############################"
 echo "Create and setup user accounts."

@@ -15,10 +15,13 @@
 UNIXTIME=`date +%s`
 
 #-- these variables should be prompted for..., eventually.
-ROOTDBPASS="abc123"
+read -s -p "Enter a mysql root password: " ROOTDBPASS
+read -p "Domainname for mailserver: " MAILNAME
+
 MAILDBPASS="123abc"
-MAILNAME="server.com"
 MAINMAILTYPE="Internet Site"
+
+exit
 
 #-- install postfix and dovecot without questions
 echo "###############################"
@@ -26,12 +29,12 @@ echo "Installing postfix and dovecot."
 echo "###############################"
 sudo debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
 sudo debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
-sudo apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp
+sudo apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp > /dev/null 2>&1
 # -- Ze filters.
-sudo apt-get -y -qq install amavis clamav clamav-daemon spamassassin postgrey
+sudo apt-get -y -qq install amavis clamav clamav-daemon spamassassin postgrey > /dev/null 2>&1
 # -- Virus detection extentions
-sudo apt-get -y -qq install libnet-dns-perl pyzor razor
-sudo apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip
+sudo apt-get -y -qq install libnet-dns-perl pyzor razor > /dev/null 2>&1
+sudo apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip > /dev/null 2>&1
 
 #-- install mysql without questions
 echo "############################"
@@ -39,7 +42,7 @@ echo "Installing mysql and extras."
 echo "############################"
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $ROOTDBPASS"
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $ROOTDBPASS"
-sudo apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql
+sudo apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql > /dev/null 2>&1
 
 #-- do some fancy search replacing
 echo "#################################"

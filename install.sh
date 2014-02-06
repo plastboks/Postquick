@@ -12,10 +12,13 @@
 # @date         2014-02-03
 #
 
+source functions.sh
+
 UNIXTIME=`date +%s`
 
 #-- these variables should be prompted for..., eventually.
 read -s -p "Enter a mysql root password: " ROOTDBPASS
+echo #newline 
 read -p "Domainname for mailserver: " MAILNAME
 
 MAILDBPASS="123abc"

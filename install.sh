@@ -32,9 +32,7 @@ sudo bash -c "echo 127.0.0.1 $MAILNAME localhost >> /etc/hosts" # kind of dirty.
 sudo hostname $MAILNAME
 
 #-- install postfix and dovecot without questions
-echo "###############################"
-echo "Installing postfix and dovecot."
-echo "###############################"
+echo "# -- Installing postfix and dovecot."
 sudo debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
 sudo debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
 sudo apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp > /dev/null 2>&1
@@ -45,17 +43,13 @@ sudo apt-get -y -qq install libnet-dns-perl pyzor razor > /dev/null 2>&1
 sudo apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip > /dev/null 2>&1
 
 #-- install mysql without questions
-echo "############################"
-echo "Installing mysql and extras."
-echo "############################"
+echo "# -- Installing mysql and extras."
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $ROOTDBPASS"
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $ROOTDBPASS"
 sudo apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql > /dev/null 2>&1
 
 #-- do some fancy search replacing
-echo "#################################"
-echo "Search replacing the configfiles."
-echo "#################################"
+echo "# -- Search replacing the configfiles."
 #-- postfix
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-mailbox-domains.cf
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-mailbox-maps.cf
@@ -69,15 +63,11 @@ sed -i "s/passwordreplace/$MAILDBPASS/g" sql/mailserver.sql
 sed -i "s/passwordreplace/$MAILDBPASS/g" configs/amavis-50-user
 
 #-- install database
-echo "#################################"
-echo "Creating the mailserver database."
-echo "#################################"
+echo "# -- Creating the mailserver database."
 mysqladmin -u root -p$ROOTDBPASS create mailserver
 mysql -u root -p$ROOTDBPASS mailserver < sql/mailserver.sql
 
-echo "############################"
-echo "Backing up old config files."
-echo "############################"
+echo "# -- Backing up old config files."
 #-- backup all old postfix config files, might fail if file does not exists.
 sudo cp /etc/postfix/main.cf /etc/postfix/main.cf.$UNIXTIME
 sudo cp /etc/postfix/master.cf /etc/postfix/master.cf.$UNIXTIME
@@ -97,9 +87,7 @@ sudo cp /etc/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf.$UNIXTIM
 sudo cp /etc/amavis/conf.d/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode.$UNIXTIME
 sudo cp /etc/amavis/conf.d/50-user /etc/amavis/conf.d/50-user.$UNIXTIME
 
-echo "#########################"
-echo "Copying over configfiles."
-echo "#########################"
+echo "# -- Copying over configfiles."
 #-- postfix
 sudo cp configs/postfix-main.cf /etc/postfix/main.cf
 sudo cp configs/postfix-master.cf /etc/postfix/master.cf
@@ -120,14 +108,11 @@ sudo chmod -R o-rwx /etc/dovecot
 #-- amavis
 sudo cp configs/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
 sudo cp configs/amavis-50-user /etc/amavis/conf.d/50-user
-
 #-- sed some in /etc/default/spamassassin
 sudo sed -i "s/ENABLED=0/ENABLED=1/g" /etc/default/spamassassin
 sudo sed -i "s/CRON=0/CRON=1/g" /etc/default/spamassassin
 
-echo "###############################"
-echo "Create and setup user accounts."
-echo "###############################"
+echo "# -- Create and setup user accounts."
 #-- dovecot accounts.
 sudo mkdir -p /var/mail/vhosts/$MAILNAME
 sudo groupadd -g 5000 vmail
@@ -138,9 +123,7 @@ sudo adduser clamav amavis
 sudo adduser amavis clamav
 
 #-- restart services
-echo "####################"
-echo "Restarting services."
-echo "####################"
+echo "# -- Restarting services."
 sudo service postfix restart
 sudo service dovecot restart
 sudo service spamassassin restart

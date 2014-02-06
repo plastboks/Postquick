@@ -21,11 +21,10 @@ read -s -p "Enter a mysql root password: " ROOTDBPASS
 echo #newline 
 read -p "Domainname for mailserver: " MAILNAME
 
+#-- generate a random string for maildbpass
 randomstring 10;
 MAILDBPASS=$myRandomResult;
 MAINMAILTYPE="Internet Site"
-
-exit
 
 #-- install postfix and dovecot without questions
 echo "###############################"

@@ -12,6 +12,11 @@
 # @date         2014-02-03
 #
 
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root" 1>&2
+    exit 1
+fi
+
 source functions.sh
 UNIXTIME=`date +%s`
 
@@ -32,27 +37,27 @@ MAILDBPASS=$myRandomResult;
 MAINMAILTYPE="Internet Site"
 
 #-- install hostname
-sudo bash -c "echo $MAILNAME > /etc/hostname"
-sudo bash -c "echo 127.0.0.1 $MAILNAME localhost >> /etc/hosts" # kind of dirty. Should be put in right place.
-sudo hostname $MAILNAME
+bash -c "echo $MAILNAME > /etc/hostname"
+bash -c "echo 127.0.0.1 $MAILNAME localhost >> /etc/hosts" # kind of dirty. Should be put in right place.
+hostname $MAILNAME
 
 #-- install postfix and dovecot without questions
 echo "# -- Installing postfix and dovecot."
-sudo debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
-sudo debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
-sudo apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp ssl-cert > /dev/null 2>&1
-sudo apt-get -y -qq install amavis clamav clamav-daemon spamassassin postgrey > /dev/null 2>&1
-sudo apt-get -y -qq install libnet-dns-perl pyzor razor > /dev/null 2>&1
-sudo apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip > /dev/null 2>&1
+debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
+debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
+apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp ssl-cert > /dev/null 2>&1
+apt-get -y -qq install amavis clamav clamav-daemon spamassassin postgrey > /dev/null 2>&1
+apt-get -y -qq install libnet-dns-perl pyzor razor > /dev/null 2>&1
+apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip > /dev/null 2>&1
 
 #-- install mysql without questions
 echo "# -- Installing mysql and extras."
-sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $ROOTDBPASS"
-sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $ROOTDBPASS"
-sudo apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql > /dev/null 2>&1
+debconf-set-selections <<< "mysql-server mysql-server/root_password password $ROOTDBPASS"
+debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $ROOTDBPASS"
+apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql > /dev/null 2>&1
 
 #-- Setup new snailoil certs
-sudo make-ssl-cert generate-default-snakeoil --force-overwrite
+make-ssl-cert generate-default-snakeoil --force-overwrite
 
 #-- do some fancy search replacing
 echo "# -- Search replacing the configfiles."
@@ -71,58 +76,58 @@ mysql -u root -p$ROOTDBPASS mailserver < sql/mailserver.sql
 
 #-- backup all configfiles
 echo "# -- Backing up old config files."
-sudo cp /etc/postfix/main.cf /etc/postfix/main.cf.$UNIXTIME
-sudo cp /etc/postfix/master.cf /etc/postfix/master.cf.$UNIXTIME
-sudo cp /etc/postfix/mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf.$UNIXTIME
-sudo cp /etc/postfix/mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf.$UNIXTIME
-sudo cp /etc/postfix/mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf.$UNIXTIME
-sudo cp /etc/postfix/postfix-header_checks /etc/postfix/header_checks.$UNIXTIME
-sudo cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.$UNIXTIME
-sudo cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
-sudo cp /etc/dovecot/conf.d/auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext.$UNIXTIME
-sudo cp /etc/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/10-mail.conf.$UNIXTIME
-sudo cp /etc/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/10-auth.conf.$UNIXTIME
-sudo cp /etc/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/10-master.conf.$UNIXTIME
-sudo cp /etc/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf.$UNIXTIME
-sudo cp /etc/amavis/conf.d/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode.$UNIXTIME
-sudo cp /etc/amavis/conf.d/50-user /etc/amavis/conf.d/50-user.$UNIXTIME
+cp /etc/postfix/main.cf /etc/postfix/main.cf.$UNIXTIME
+cp /etc/postfix/master.cf /etc/postfix/master.cf.$UNIXTIME
+cp /etc/postfix/mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf.$UNIXTIME
+cp /etc/postfix/mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf.$UNIXTIME
+cp /etc/postfix/mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf.$UNIXTIME
+cp /etc/postfix/postfix-header_checks /etc/postfix/header_checks.$UNIXTIME
+cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.$UNIXTIME
+cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
+cp /etc/dovecot/conf.d/auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext.$UNIXTIME
+cp /etc/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/10-mail.conf.$UNIXTIME
+cp /etc/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/10-auth.conf.$UNIXTIME
+cp /etc/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/10-master.conf.$UNIXTIME
+cp /etc/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf.$UNIXTIME
+cp /etc/amavis/conf.d/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode.$UNIXTIME
+cp /etc/amavis/conf.d/50-user /etc/amavis/conf.d/50-user.$UNIXTIME
 
 #-- install new configfiles
 echo "# -- Installing the new configfiles."
-sudo cp configs/postfix-main.cf /etc/postfix/main.cf
-sudo cp configs/postfix-master.cf /etc/postfix/master.cf
-sudo cp configs/postfix-header_checks /etc/postfix/header_checks
-sudo cp configs/postfix-mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf
-sudo cp configs/postfix-mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf
-sudo cp configs/postfix-mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf
-sudo cp configs/dovecot-dovecot.conf /etc/dovecot/dovecot.conf
-sudo cp configs/dovecot-dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext
-sudo cp configs/dovecot-auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext
-sudo cp configs/dovecot-10-mail.conf /etc/dovecot/conf.d/10-mail.conf
-sudo cp configs/dovecot-10-auth.conf /etc/dovecot/conf.d/10-auth.conf
-sudo cp configs/dovecot-10-master.conf /etc/dovecot/conf.d/10-master.conf
-sudo cp configs/dovecot-10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf
-sudo cp configs/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
-sudo cp configs/amavis-50-user /etc/amavis/conf.d/50-user
-sudo sed -i "s/ENABLED=0/ENABLED=1/g" /etc/default/spamassassin
-sudo sed -i "s/CRON=0/CRON=1/g" /etc/default/spamassassin
+cp configs/postfix-main.cf /etc/postfix/main.cf
+cp configs/postfix-master.cf /etc/postfix/master.cf
+cp configs/postfix-header_checks /etc/postfix/header_checks
+cp configs/postfix-mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf
+cp configs/postfix-mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf
+cp configs/postfix-mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf
+cp configs/dovecot-dovecot.conf /etc/dovecot/dovecot.conf
+cp configs/dovecot-dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext
+cp configs/dovecot-auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext
+cp configs/dovecot-10-mail.conf /etc/dovecot/conf.d/10-mail.conf
+cp configs/dovecot-10-auth.conf /etc/dovecot/conf.d/10-auth.conf
+cp configs/dovecot-10-master.conf /etc/dovecot/conf.d/10-master.conf
+cp configs/dovecot-10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf
+cp configs/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
+cp configs/amavis-50-user /etc/amavis/conf.d/50-user
+sed -i "s/ENABLED=0/ENABLED=1/g" /etc/default/spamassassin
+sed -i "s/CRON=0/CRON=1/g" /etc/default/spamassassin
 
 echo "# -- Create and setup user accounts."
-sudo mkdir -p /var/mail/vhosts/$MAILNAME
-sudo groupadd -g 5000 vmail
-sudo useradd -g vmail -u 5000 vmail -d /var/mail
-sudo chown -R vmail:vmail /var/mail
-sudo adduser clamav amavis
-sudo adduser amavis clamav
-sudo chown -R vmail:dovecot /etc/dovecot
-sudo chmod -R o-rwx /etc/dovecot
+mkdir -p /var/mail/vhosts/$MAILNAME
+groupadd -g 5000 vmail
+useradd -g vmail -u 5000 vmail -d /var/mail
+chown -R vmail:vmail /var/mail
+adduser clamav amavis
+adduser amavis clamav
+chown -R vmail:dovecot /etc/dovecot
+chmod -R o-rwx /etc/dovecot
 
 #-- restart services
 echo "# -- Restarting services."
-sudo service postfix restart
-sudo service dovecot restart
-sudo service spamassassin restart
-sudo service clamav-daemon restart
-sudo service amavis restart
+service postfix restart
+service dovecot restart
+service spamassassin restart
+service clamav-daemon restart
+service amavis restart
 
 exit

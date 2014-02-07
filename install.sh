@@ -76,13 +76,25 @@ mysql -u root -p$ROOTDBPASS mailserver_$DBVERSION < sql/mailserver.sql
 echo "# -- Backing up old config files."
 cp /etc/postfix/main.cf /etc/postfix/main.cf.$UNIXTIME
 cp /etc/postfix/master.cf /etc/postfix/master.cf.$UNIXTIME
-cp /etc/postfix/mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf.$UNIXTIME
-cp /etc/postfix/mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf.$UNIXTIME
-cp /etc/postfix/mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf.$UNIXTIME
-cp /etc/postfix/postfix-header_checks /etc/postfix/header_checks.$UNIXTIME
+if [ -f /etc/postfix/mysql-virtual-mailbox-domains.cf ]; then
+    cp /etc/postfix/mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf.$UNIXTIME
+fi
+if [ -f /etc/postfix/mysql-virtual-mailbox-maps.cf ]; then
+    cp /etc/postfix/mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf.$UNIXTIME
+fi
+if [ -f /etc/postfix/mysql-virtual-alias-maps.cf ];then
+    cp /etc/postfix/mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf.$UNIXTIME
+fi
+if [ -f /etc/postfix/postfix-header_checks ]; then
+    cp /etc/postfix/postfix-header_checks /etc/postfix/header_checks.$UNIXTIME
+fi
 cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.$UNIXTIME
-cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
-cp /etc/dovecot/conf.d/auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext.$UNIXTIME
+if [ -f /etc/dovecot/dovecot-sql.conf.ext]; then
+    cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
+fi
+if [ -f /etc/dovecot/conf.d/auth-sql.conf.ext ]; then
+    cp /etc/dovecot/conf.d/auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext.$UNIXTIME
+fi
 cp /etc/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/10-mail.conf.$UNIXTIME
 cp /etc/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/10-auth.conf.$UNIXTIME
 cp /etc/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/10-master.conf.$UNIXTIME

@@ -89,7 +89,7 @@ if [ -f /etc/postfix/postfix-header_checks ]; then
     cp /etc/postfix/postfix-header_checks /etc/postfix/header_checks.$UNIXTIME
 fi
 cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.$UNIXTIME
-if [ -f /etc/dovecot/dovecot-sql.conf.ext]; then
+if [ -f /etc/dovecot/dovecot-sql.conf.ext ]; then
     cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
 fi
 if [ -f /etc/dovecot/conf.d/auth-sql.conf.ext ]; then
@@ -132,12 +132,15 @@ adduser amavis clamav > /dev/null 2>&1
 chown -R vmail:dovecot /etc/dovecot
 chmod -R o-rwx /etc/dovecot
 
+#-- updating virus system
+freshclam > /dev/null 2>&1
+
 #-- restart services
 echo "# -- Restarting services."
 service postfix restart
 service dovecot restart
+service spamassassin start
 service amavis restart
-service spamassassin restart
 service clamav-daemon restart
 
 exit

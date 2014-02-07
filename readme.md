@@ -4,8 +4,8 @@ Simple and stupid script for deploying a postfix, dovecot (++) mail server on Ub
 
 Install
 =======
-  * Clone this repo on to your mail server to be: `git clone git@github.com:plastboks/postquick.git`
-  * run the install script: `sh install.sh`
+  * Clone this repo on to your mail server (to be): `git clone https://github.com/plastboks/Postquick.git`
+  * run the `install.sh` script as root or with sudo.
 
 About
 =====
@@ -15,13 +15,13 @@ Featurelist
 ===========
   * Postfix SMTP server.
   * Dovecot IMAP/POP server.
-  * Postgray graylisting incomming email.
+  * Postgray graylisting incoming email.
   * Dovecot sieve email routing.
   * Amavisd-new manager for spam and virus check.
   * Spamassassin spam filter
   * Clam Antivirus
-  * Postfix admin webinterface.
-  * Roundcube webmail.
+  * Postfix admin webinterface. # This will probably not happen...
+  * Roundcube webmail # This will probably not happen...
 
 OS
 ==

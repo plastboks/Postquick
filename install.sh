@@ -124,11 +124,11 @@ sed -i "s/CRON=0/CRON=1/g" /etc/default/spamassassin
 
 echo "# -- Create and setup user accounts."
 mkdir -p /var/mail/vhosts/$MAILNAME
-groupadd -g 5000 vmail
-useradd -g vmail -u 5000 vmail -d /var/mail
+groupadd -g 5000 vmail > /dev/null 2>&1
+useradd -g vmail -u 5000 vmail -d /var/mail > /dev/null 2>&1
 chown -R vmail:vmail /var/mail
-adduser clamav amavis
-adduser amavis clamav
+adduser clamav amavis > /dev/null 2>&1
+adduser amavis clamav > /dev/null 2>&1
 chown -R vmail:dovecot /etc/dovecot
 chmod -R o-rwx /etc/dovecot
 
@@ -136,8 +136,8 @@ chmod -R o-rwx /etc/dovecot
 echo "# -- Restarting services."
 service postfix restart
 service dovecot restart
+service amavis restart
 service spamassassin restart
 service clamav-daemon restart
-service amavis restart
 
 exit

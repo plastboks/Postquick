@@ -20,14 +20,11 @@ fi
 source functions.sh
 UNIXTIME=`date +%s`
 
-#-- these variables should be prompted for..., eventually.
-# An if statement should be added here for compatibility towards
-# servers with mysql already installed.
-# IF dpkg --get-selections | grep mysql-server
-#    enter mysql root password
-# ELSE
-#    enter new mysql root password
-read -s -p "Enter a new mysql root password: " ROOTDBPASS
+if dpkg --get-selections | grep "mysql-server" >> /dev/null; then
+    read -s -p "Enter current mysql root password: " ROOTDBPASS
+else
+    read -s -p "Enter a new mysql root password: " ROOTDBPASS
+fi
 echo #newline 
 read -p "Domainname for mailserver: " MAILNAME
 

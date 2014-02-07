@@ -35,6 +35,7 @@ read -p "Domainname for mailserver: " MAILNAME
 randomstring 10;
 MAILDBPASS=$myRandomResult;
 MAINMAILTYPE="Internet Site"
+DBVERSION=01
 
 #-- install hostname
 bash -c "echo $MAILNAME > /etc/hostname"
@@ -71,8 +72,8 @@ sed -i "s/passwordreplace/$MAILDBPASS/g" configs/amavis-50-user
 
 #-- install database
 echo "# -- Creating the mailserver database."
-mysqladmin -u root -p$ROOTDBPASS create mailserver
-mysql -u root -p$ROOTDBPASS mailserver < sql/mailserver.sql
+mysqladmin -u root -p$ROOTDBPASS create mailserver_$DBVERSION
+mysql -u root -p$ROOTDBPASS mailserver_$DBVERSION < sql/mailserver.sql
 
 #-- backup all configfiles
 echo "# -- Backing up old config files."

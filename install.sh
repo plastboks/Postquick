@@ -19,14 +19,41 @@ fi
 
 source functions.sh
 UNIXTIME=`date +%s`
+VIRUSFILTER=0
+
+while test $# -gt 0; do
+    OPTION=$1
+    shift
+
+    case "$OPTION" in
+        --virusfilter)
+            $VIRUSFILTER=1 
+        ;;
+        -*)
+            echo "Unrecognized option $OPTION"
+            exit
+        ;;
+        *)
+            MAILNAME=$OPTION
+        ;;
+    esac
+done
+
+if [ "x$DEVICE" = "x" ]; then
+    echo "Usage: $0 <options> <mailservername>"
+    cat<<"EOF"
+
+    --virusfilter            Install viruscheck systems
+
+EOF
+    exit
+fi
 
 if dpkg --get-selections | grep "mysql-server" >> /dev/null; then
     read -s -p "Enter current mysql root password: " ROOTDBPASS
 else
     read -s -p "Enter a new mysql root password: " ROOTDBPASS
 fi
-echo #newline 
-read -p "Domainname for mailserver: " MAILNAME
 
 #-- generate a random string for maildbpass
 randomstring 10;
@@ -44,8 +71,12 @@ echo "# -- Installing postfix and dovecot."
 debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
 debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
 apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp ssl-cert > /dev/null 2>&1
-apt-get -y -qq install amavis clamav clamav-daemon spamassassin postgrey > /dev/null 2>&1
+#-- spam
+apt-get -y -qq install amavis spamassassin postgrey > /dev/null 2>&1
 apt-get -y -qq install libnet-dns-perl pyzor razor > /dev/null 2>&1
+#-- virus
+# make this section optional
+apt-get -y -qq install clamav clamav-daemon > /dev/null 2>&1
 apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip > /dev/null 2>&1
 
 #-- install mysql without questions

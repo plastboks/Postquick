@@ -2,4 +2,4 @@ user = mailuser
 passwordreplace
 hosts = 127.0.0.1
 dbname = mailserver
-query = SELECT 1 FROM virtual_domains WHERE name='%s' and active = 1
+query = SELECT 1 FROM virtual_domains WHERE domain='%s' and active = 1

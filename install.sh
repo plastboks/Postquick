@@ -59,7 +59,7 @@ fi
 randomstring 10;
 MAILDBPASS=$myRandomResult;
 MAINMAILTYPE="Internet Site"
-DBVERSION=01
+DBVERSION=02
 
 #-- install hostname
 bash -c "echo $MAILNAME > /etc/hostname"

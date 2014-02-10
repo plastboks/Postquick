@@ -70,7 +70,8 @@ echo ""
 echo "# -- Installing postfix and dovecot."
 debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
 debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
-apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-lmtpd ntp ssl-cert > /dev/null 2>&1
+apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d \
+                       dovecot-lmtpd ntp ssl-cert dovecot-sieve > /dev/null 2>&1
 #-- spam
 apt-get -y -qq install amavis spamassassin postgrey > /dev/null 2>&1
 apt-get -y -qq install libnet-dns-perl pyzor razor > /dev/null 2>&1

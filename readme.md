@@ -33,3 +33,4 @@ Inspiration
 This simple script is inspired by tutorials as:
   * [Email with Postfix, Dovecot, and MySQL – Linode Library](https://library.linode.com/email/postfix/postfix2.9.6-dovecot2.0.19-mysql)
   * [Mailserver on Ubuntu 12.04: Postfix, Dovecot, MySQL](https://www.exratione.com/2012/05/a-mailserver-on-ubuntu-1204-postfix-dovecot-mysql/)
+  * [Postfix installation on Ubuntu](http://www.serverubuntu.it/postfix-dovecot-guide)

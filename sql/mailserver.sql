@@ -6,8 +6,8 @@ CREATE TABLE `virtual_domains` (
     `id` int(11) NOT NULL auto_increment,
     `domain` varchar(50) NOT NULL,
     `active` tinyint(1) unsigned NOT NULL default '1',
-    PRIMARY KEY (`id`)
-    UNIQUE KEY `domain` (`domain`),
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `domain` (`domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `virtual_usergroups` (

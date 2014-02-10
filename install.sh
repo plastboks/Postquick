@@ -19,7 +19,6 @@ fi
 
 source functions.sh
 UNIXTIME=`date +%s`
-VIRUSFILTER=0
 
 while test $# -gt 0; do
     OPTION=$1
@@ -27,7 +26,7 @@ while test $# -gt 0; do
 
     case "$OPTION" in
         --virusfilter)
-            $VIRUSFILTER=1 
+            VIRUSFILTER=1 
         ;;
         -*)
             echo "Unrecognized option $OPTION"
@@ -39,7 +38,7 @@ while test $# -gt 0; do
     esac
 done
 
-if [ "x$DEVICE" = "x" ]; then
+if [ "x$MAILNAME" = "x" ]; then
     echo "Usage: $0 <options> <mailservername>"
     cat<<"EOF"
 
@@ -75,9 +74,10 @@ apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d dovecot-
 apt-get -y -qq install amavis spamassassin postgrey > /dev/null 2>&1
 apt-get -y -qq install libnet-dns-perl pyzor razor > /dev/null 2>&1
 #-- virus
-# make this section optional
-apt-get -y -qq install clamav clamav-daemon > /dev/null 2>&1
-apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip > /dev/null 2>&1
+if [ "x$VIRUSFILTER" != "x" ]; then
+    apt-get -y -qq install clamav clamav-daemon > /dev/null 2>&1
+    apt-get -y -qq install arj bzip2 cabextract cpio file gzip nomarch pax unzip zip > /dev/null 2>&1
+fi
 
 #-- install mysql without questions
 echo "# -- Installing mysql and extras."
@@ -158,13 +158,12 @@ mkdir -p /var/mail/vhosts/$MAILNAME
 groupadd -g 5000 vmail > /dev/null 2>&1
 useradd -g vmail -u 5000 vmail -d /var/mail > /dev/null 2>&1
 chown -R vmail:vmail /var/mail
-adduser clamav amavis > /dev/null 2>&1
+if [ "x$VIRUSFILTER" != "x" ]; then
+    adduser clamav amavis > /dev/null 2>&1
+if
 adduser amavis clamav > /dev/null 2>&1
 chown -R vmail:dovecot /etc/dovecot
 chmod -R o-rwx /etc/dovecot
-
-#-- updating virus system
-freshclam > /dev/null 2>&1
 
 #-- restart services
 echo "# -- Restarting services."
@@ -172,6 +171,9 @@ service postfix restart
 service dovecot restart
 service spamassassin start
 service amavis restart
-service clamav-daemon restart
+if [ "x$VIRUSFILTER" != "x" ]; then
+    freshclam > /dev/null 2>&1
+    service clamav-daemon restart
+fi
 
 exit

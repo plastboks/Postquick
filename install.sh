@@ -66,6 +66,7 @@ bash -c "echo 127.0.0.1 $MAILNAME localhost >> /etc/hosts" # kind of dirty. Shou
 hostname $MAILNAME
 
 #-- install postfix and dovecot without questions
+echo ""
 echo "# -- Installing postfix and dovecot."
 debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
 debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"

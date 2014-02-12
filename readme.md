@@ -25,8 +25,7 @@ Featurelist
 
 OS
 ==
-This script will mainly be written for Ubuntu 12.04 because of the wide support for this OS on different VPS providers. In the future a Arch Linux version might not be unheard of.
-As of now, this script will be written for blank installations of Ubuntu. Environments with mysql (and such) already installed is NOT supported.
+This script will mainly be written for Ubuntu 12.04 because of the wide support for this OS on different VPS providers. In the future a Arch Linux version might not be unheard of. As of now, this script will be best suited for vanilla Ubuntu installations.
 
 Inspiration 
 ===========

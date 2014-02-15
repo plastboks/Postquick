@@ -20,6 +20,7 @@ fi
 source functions.sh
 UNIXTIME=`date +%s`
 
+#-- option parser
 while test $# -gt 0; do
     OPTION=$1
     shift
@@ -38,6 +39,7 @@ while test $# -gt 0; do
     esac
 done
 
+#-- output if args is not present
 if [ "x$MAILNAME" = "x" ]; then
     echo "Usage: $0 <options> <mailservername>"
     cat<<"EOF"
@@ -48,6 +50,7 @@ EOF
     exit
 fi
 
+#-- Check if mysql is present. If so, prompt for root password.
 if dpkg --get-selections | grep "mysql-server" >> /dev/null; then
     read -s -p "Enter current mysql root password: " ROOTDBPASS
 else

@@ -4,7 +4,7 @@
 # a CLEAN! Ubuntu (12.04) server.
 #
 # @category     install script.
-# @version      0.0.3
+# @version      0.0.4
 # @author       Alexander Skjolden
 # @license      http://www.gnu.org/licenses/gpl-3.0.html GNU General Public License
 #
@@ -93,7 +93,7 @@ apt-get -y -qq install dovecot-mysql mysql-server postfix-mysql > /dev/null 2>&1
 #-- Setup new snailoil certs
 make-ssl-cert generate-default-snakeoil --force-overwrite
 
-#-- do some fancy search replacing
+#-- do some fancy search replacing in the config files
 echo "# -- Search replacing the configfiles."
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-mailbox-domains.cf
 sed -i "s/passwordreplace/password = $MAILDBPASS/g" configs/postfix-mysql-virtual-mailbox-maps.cf
@@ -108,7 +108,7 @@ echo "# -- Creating the mailserver database."
 mysqladmin -u root -p$ROOTDBPASS create mailserver_$DBVERSION
 mysql -u root -p$ROOTDBPASS mailserver_$DBVERSION < sql/mailserver.sql
 
-#-- backup all configfiles
+#-- backup all system config files
 echo "# -- Backing up old config files."
 cp /etc/postfix/main.cf /etc/postfix/main.cf.$UNIXTIME
 cp /etc/postfix/master.cf /etc/postfix/master.cf.$UNIXTIME
@@ -124,13 +124,13 @@ fi
 if [ -f /etc/postfix/postfix-header_checks ]; then
     cp /etc/postfix/postfix-header_checks /etc/postfix/header_checks.$UNIXTIME
 fi
-cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.$UNIXTIME
 if [ -f /etc/dovecot/dovecot-sql.conf.ext ]; then
     cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
 fi
 if [ -f /etc/dovecot/conf.d/auth-sql.conf.ext ]; then
     cp /etc/dovecot/conf.d/auth-sql.conf.ext /etc/dovecot/conf.d/auth-sql.conf.ext.$UNIXTIME
 fi
+cp /etc/dovecot/dovecot.conf /etc/dovecot/dovecot.conf.$UNIXTIME
 cp /etc/dovecot/conf.d/10-mail.conf /etc/dovecot/conf.d/10-mail.conf.$UNIXTIME
 cp /etc/dovecot/conf.d/10-auth.conf /etc/dovecot/conf.d/10-auth.conf.$UNIXTIME
 cp /etc/dovecot/conf.d/10-master.conf /etc/dovecot/conf.d/10-master.conf.$UNIXTIME
@@ -138,7 +138,7 @@ cp /etc/dovecot/conf.d/10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf.$UNIXTIME
 cp /etc/amavis/conf.d/15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode.$UNIXTIME
 cp /etc/amavis/conf.d/50-user /etc/amavis/conf.d/50-user.$UNIXTIME
 
-#-- install new configfiles
+#-- install new config files
 echo "# -- Installing the new configfiles."
 cp configs/postfix-main.cf /etc/postfix/main.cf
 cp configs/postfix-master.cf /etc/postfix/master.cf
@@ -153,7 +153,11 @@ cp configs/dovecot-10-mail.conf /etc/dovecot/conf.d/10-mail.conf
 cp configs/dovecot-10-auth.conf /etc/dovecot/conf.d/10-auth.conf
 cp configs/dovecot-10-master.conf /etc/dovecot/conf.d/10-master.conf
 cp configs/dovecot-10-ssl.conf /etc/dovecot/conf.d/10-ssl.conf
-cp configs/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
+if [ "x$VIRUSFILTER" != "x" ]; then
+    cp configs/amavis-15-content_filter_mode /etc/amavis/conf.d/15-content_filter_mode
+else
+    cp configs/amavis-15-content_filter_mode.novirus /etc/amavis/conf.d/15-content_filter_mode
+fi
 cp configs/amavis-50-user /etc/amavis/conf.d/50-user
 sed -i "s/ENABLED=0/ENABLED=1/g" /etc/default/spamassassin
 sed -i "s/CRON=0/CRON=1/g" /etc/default/spamassassin
@@ -175,10 +179,10 @@ echo "# -- Restarting services."
 service postfix restart
 service dovecot restart
 service spamassassin start
-service amavis restart
 if [ "x$VIRUSFILTER" != "x" ]; then
     freshclam > /dev/null 2>&1
     service clamav-daemon restart
 fi
+service amavis restart
 
 exit

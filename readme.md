@@ -19,9 +19,13 @@ Featurelist
   * Dovecot sieve email routing.
   * Amavisd-new manager for spam and virus check.
   * Spamassassin spam filter
-  * Clam Antivirus
+  * Clam Antivirus # Optional trough argument.
   * Postfix admin webinterface. # This will probably not happen...
   * Roundcube webmail # This will probably not happen...
+
+Other / Todo
+=============
+Since amavisd seems to be such a memory hog, I think it would be wise to only install amavisd as a opt-in, and only install spamassassin as a standalone service if not.
 
 OS
 ==

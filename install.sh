@@ -73,7 +73,7 @@ echo ""
 echo "# -- Installing postfix and dovecot."
 debconf-set-selections <<< "postfix postfix/mailname select $MAILNAME"
 debconf-set-selections <<< "postfix postfix/main_mailer_type select $MAINMAILTYPE"
-apt-get -y -qq install postfix dovecot-core dovecot-imapd dovecot-pop3d \
+apt-get -y -qq install postfix postfix-pcre dovecot-core dovecot-imapd dovecot-pop3d \
                        dovecot-lmtpd ntp ssl-cert dovecot-sieve > /dev/null 2>&1
 #-- spam
 apt-get -y -qq install amavis spamassassin postgrey > /dev/null 2>&1
@@ -124,6 +124,9 @@ fi
 if [ -f /etc/postfix/postfix-header_checks ]; then
     cp /etc/postfix/postfix-header_checks /etc/postfix/header_checks.$UNIXTIME
 fi
+if [ -f /etc/postfix/whitelist.pcre ]; then
+    cp /etc/postfix/whitelist.pcre /etc/postfix/whitelist.pcre.$UNIXTIME
+fi
 if [ -f /etc/dovecot/dovecot-sql.conf.ext ]; then
     cp /etc/dovecot/dovecot-sql.conf.ext /etc/dovecot/dovecot-sql.conf.ext.$UNIXTIME
 fi
@@ -143,6 +146,7 @@ echo "# -- Installing the new configfiles."
 cp configs/postfix-main.cf /etc/postfix/main.cf
 cp configs/postfix-master.cf /etc/postfix/master.cf
 cp configs/postfix-header_checks /etc/postfix/header_checks
+cp configs/postfix-whitelist.pcre /etc/postfix/whitelist.pcre
 cp configs/postfix-mysql-virtual-mailbox-domains.cf /etc/postfix/mysql-virtual-mailbox-domains.cf
 cp configs/postfix-mysql-virtual-mailbox-maps.cf /etc/postfix/mysql-virtual-mailbox-maps.cf
 cp configs/postfix-mysql-virtual-alias-maps.cf /etc/postfix/mysql-virtual-alias-maps.cf

@@ -1,0 +1,2 @@
+#/user@domain\.com/         FILTER       smtp:localhost:10025
+

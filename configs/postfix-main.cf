@@ -76,9 +76,10 @@ disable_vrfy_command = yes
 content_filter = amavis:[127.0.0.1]:10024
 
 # Header manipulation
-# --------------------------------------
-#
 # Getting rid of unwanted headers. See: https://posluns.com/guides/header-removal/
 header_checks = regexp:/etc/postfix/header_checks
+# Whitelist 
+header_checks = pcre:/etc/postfix/whitelist.pcre
+
 # getting rid of x-original-to
 enable_original_recipient = no
